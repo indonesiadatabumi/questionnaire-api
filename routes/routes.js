@@ -27,13 +27,13 @@ router.get('/endpoints', checkRolePermission, endpointController.getEndpoints);
 // Role Privileges routes
 router.post('/role_privileges', checkRolePermission, rolePrivilegesController.setRolePrivileges);
 // Question routes
-router.post('/questions', questionController.createQuestion); // Create a new question (supports multi-choice)
-router.get('/questions/:questionnaire_id', questionController.getQuestionsByQuestionnaire); // Get questions by questionnaire
+router.post('/questions', checkRolePermission, questionController.createQuestion); // Create a new question (supports multi-choice)
+router.get('/questions/:questionnaire_id', checkRolePermission, questionController.getQuestionsByQuestionnaire); // Get questions by questionnaire
 
 // Answer routes
-router.post('/answers', answerController.submitAnswer); // Submit an answer (supports multi-choice answers)
+router.post('/answers', checkRolePermission, answerController.submitAnswer); // Submit an answer (supports multi-choice answers)
 
 // DSS routes
-router.post('/dss/submit', dssController.submitAnalysis); // Perform analysis on submitted answers
+router.post('/dss/submit', checkRolePermission, dssController.submitAnalysis); // Perform analysis on submitted answers
 
 module.exports = router;
