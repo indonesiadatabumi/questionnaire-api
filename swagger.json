@@ -1,0 +1,1263 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Questionnaire API",
+    "version": "1.0.0",
+    "description": "API for managing questionnaires and responses"
+  },
+  "components": {
+    "securitySchemes": {
+      "Authorization": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "value": "Bearer <JWT token here>"
+      }
+    }
+  },
+  "paths": {
+    "/submitAnswer": {
+      "post": {
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "Submit an answer to a question",
+        "description": "Allows users to submit answers to questions. Supports both text answers and multiple-choice answers.",
+        "tags": [
+          "Answers"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "response_id",
+                  "question_id"
+                ],
+                "properties": {
+                  "response_id": {
+                    "type": "integer",
+                    "description": "The ID of the response session.",
+                    "example": 1
+                  },
+                  "question_id": {
+                    "type": "integer",
+                    "description": "The ID of the question being answered.",
+                    "example": 10
+                  },
+                  "answer_text": {
+                    "type": "string",
+                    "description": "Answer text for open-ended questions (used if question is not multiple-choice).",
+                    "example": "This is a sample text answer."
+                  },
+                  "answer_option": {
+                    "type": "array",
+                    "description": "Array of selected options for multiple-choice questions.",
+                    "items": {
+                      "type": "integer",
+                      "description": "Option ID for a multiple-choice answer."
+                    },
+                    "example": [
+                      1,
+                      2,
+                      4
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Answer submitted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Answer submitted successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to submit answer due to server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Failed to submit answer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dss/submit": {
+      "post": {
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "Perform analysis on submitted answers",
+        "description": "Analyzes the answers of a specific questionnaire, calculating the most common selected options for multiple-choice questions. Results are stored in the DSS analysis table.",
+        "tags": [
+          "Analysis"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "questionnaire_id"
+                ],
+                "properties": {
+                  "questionnaire_id": {
+                    "type": "integer",
+                    "description": "The ID of the questionnaire to analyze.",
+                    "example": 5
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Analysis successfully completed and stored in DSS table",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "questionnaire_id": {
+                      "type": "integer",
+                      "example": 5
+                    },
+                    "analysis_result": {
+                      "type": "string",
+                      "description": "JSON string containing analysis results",
+                      "example": "[{\"option_text\": \"Option A\", \"count\": 23}, {\"option_text\": \"Option B\", \"count\": 17}]"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to perform analysis due to server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Failed to perform analysis"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/endpoints": {
+      "post": {
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "Create a new API endpoint",
+        "description": "Adds a new API endpoint with specified URL, HTTP method, and description to the system.",
+        "tags": [
+          "Endpoints"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "url",
+                  "method",
+                  "description"
+                ],
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "description": "The URL path of the new endpoint.",
+                    "example": "/api/v1/new-endpoint"
+                  },
+                  "method": {
+                    "type": "string",
+                    "description": "HTTP method of the endpoint (GET, POST, PUT, DELETE).",
+                    "example": "POST"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Brief description of the endpoint’s purpose.",
+                    "example": "Creates a new resource in the system."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Endpoint created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "url": {
+                      "type": "string",
+                      "example": "/api/v1/new-endpoint"
+                    },
+                    "method": {
+                      "type": "string",
+                      "example": "POST"
+                    },
+                    "description": {
+                      "type": "string",
+                      "example": "Creates a new resource in the system."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error creating endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Error creating endpoint"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "Retrieve all API endpoints",
+        "description": "Fetches a list of all available API endpoints, including URL, method, and description for each.",
+        "tags": [
+          "Endpoints"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved the list of endpoints",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer",
+                        "example": 1
+                      },
+                      "url": {
+                        "type": "string",
+                        "example": "/api/v1/new-endpoint"
+                      },
+                      "method": {
+                        "type": "string",
+                        "example": "POST"
+                      },
+                      "description": {
+                        "type": "string",
+                        "example": "Creates a new resource in the system."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to fetch endpoints due to server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Failed to fetch endpoints"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mbti/questions": {
+      "get": {
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "Retrieve all MBTI-related questions.",
+        "description": "Fetch a list of questions designed for MBTI assessment.",
+        "tags": [
+          "MBTI"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of MBTI questions retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "question_id": {
+                        "type": "integer",
+                        "description": "ID of the question."
+                      },
+                      "question_text": {
+                        "type": "string",
+                        "description": "Text of the MBTI question."
+                      },
+                      "dimension": {
+                        "type": "string",
+                        "description": "Personality dimension (e.g., EI, SN, TF, JP)."
+                      },
+                      "direction": {
+                        "type": "string",
+                        "enum": [
+                          "positive",
+                          "negative"
+                        ],
+                        "description": "Direction of scoring for the dimension."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to fetch MBTI questions."
+          }
+        }
+      }
+    },
+    "/mbti/submit": {
+      "post": {
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "Submit user's MBTI assessment answers.",
+        "description": "Calculate MBTI type based on the user's answers and store it in the database.",
+        "tags": [
+          "MBTI"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "answers": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "question_id": {
+                          "type": "integer",
+                          "description": "ID of the answered question."
+                        },
+                        "response": {
+                          "type": "integer",
+                          "description": "User's response to the question (1-5 scale)."
+                        }
+                      }
+                    }
+                  }
+                },
+                "required": [
+                  "answers"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "MBTI type calculated and saved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "description": "User's calculated MBTI type (e.g., INTJ)."
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "Description of the calculated MBTI type."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or missing required fields."
+          },
+          "500": {
+            "description": "Failed to submit MBTI answers."
+          }
+        }
+      }
+    },
+    "/mbti/user-type": {
+      "get": {
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "Get user's MBTI type.",
+        "description": "Retrieve the MBTI type for the authenticated user.",
+        "tags": [
+          "MBTI"
+        ],
+        "responses": {
+          "200": {
+            "description": "User's MBTI type retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type_name": {
+                      "type": "string",
+                      "description": "MBTI type of the user (e.g., INTJ)."
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "Description of the user's MBTI type."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "MBTI type not found for user."
+          },
+          "500": {
+            "description": "Failed to fetch user's MBTI type."
+          }
+        }
+      }
+    },
+    "/questions": {
+      "post": {
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "Create a new question within a questionnaire",
+        "description": "Adds a new question to a specified questionnaire. If the question is multiple-choice, includes options.",
+        "tags": [
+          "Questions"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "questionnaire_id",
+                  "question_text",
+                  "question_type"
+                ],
+                "properties": {
+                  "questionnaire_id": {
+                    "type": "integer",
+                    "description": "The ID of the questionnaire to add the question to.",
+                    "example": 1
+                  },
+                  "question_text": {
+                    "type": "string",
+                    "description": "The text of the question.",
+                    "example": "What is the capital of France?"
+                  },
+                  "question_type": {
+                    "type": "string",
+                    "description": "The type of the question (e.g., 'multiple_choice', 'text').",
+                    "example": "multiple_choice"
+                  },
+                  "options": {
+                    "type": "array",
+                    "description": "Options for multiple-choice questions.",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "text": {
+                          "type": "string",
+                          "description": "Text of the option.",
+                          "example": "Paris"
+                        },
+                        "is_correct": {
+                          "type": "boolean",
+                          "description": "Indicates if this option is correct.",
+                          "example": true
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Question created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "question_id": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "questionnaire_id": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "question_text": {
+                      "type": "string",
+                      "example": "What is the capital of France?"
+                    },
+                    "question_type": {
+                      "type": "string",
+                      "example": "multiple_choice"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to create question",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Failed to create question"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/questions/{questionnaire_id}": {
+      "get": {
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "Retrieve all questions for a questionnaire",
+        "description": "Fetches all questions for a given questionnaire, including options for multiple-choice questions.",
+        "tags": [
+          "Questions"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "questionnaire_id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The ID of the questionnaire to retrieve questions from."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved questions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "question_id": {
+                        "type": "integer",
+                        "example": 1
+                      },
+                      "questionnaire_id": {
+                        "type": "integer",
+                        "example": 1
+                      },
+                      "question_text": {
+                        "type": "string",
+                        "example": "What is the capital of France?"
+                      },
+                      "question_type": {
+                        "type": "string",
+                        "example": "multiple_choice"
+                      },
+                      "options": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "option_id": {
+                              "type": "integer",
+                              "example": 10
+                            },
+                            "option_text": {
+                              "type": "string",
+                              "example": "Paris"
+                            },
+                            "is_correct": {
+                              "type": "boolean",
+                              "example": true
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to fetch questions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Failed to fetch questions"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/questionnaire": {
+      "post": {
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "Create a new questionnaire",
+        "description": "Adds a new questionnaire with a title, description, and the user who created it.",
+        "tags": [
+          "Questionnaires"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "title",
+                  "description"
+                ],
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "The title of the questionnaire.",
+                    "example": "Customer Satisfaction Survey"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "A brief description of the questionnaire.",
+                    "example": "A survey to collect feedback from customers."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successfully created the questionnaire",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "questionnaire_id": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "title": {
+                      "type": "string",
+                      "example": "Customer Satisfaction Survey"
+                    },
+                    "description": {
+                      "type": "string",
+                      "example": "A survey to collect feedback from customers."
+                    },
+                    "created_by": {
+                      "type": "integer",
+                      "example": 123
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to create questionnaire",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Failed to create questionnaire"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "Retrieve all questionnaires",
+        "description": "Fetches a list of all questionnaires in the system.",
+        "tags": [
+          "Questionnaires"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved questionnaires",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "questionnaire_id": {
+                        "type": "integer",
+                        "example": 1
+                      },
+                      "title": {
+                        "type": "string",
+                        "example": "Customer Satisfaction Survey"
+                      },
+                      "description": {
+                        "type": "string",
+                        "example": "A survey to collect feedback from customers."
+                      },
+                      "created_by": {
+                        "type": "integer",
+                        "example": 123
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to fetch questionnaires",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Failed to fetch questionnaires"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/roles": {
+      "post": {
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "Create a new role",
+        "description": "Creates a new role with a name and description for use in role-based access control.",
+        "tags": [
+          "Roles"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "role_name",
+                  "description"
+                ],
+                "properties": {
+                  "role_name": {
+                    "type": "string",
+                    "description": "The name of the role.",
+                    "example": "Admin"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "A description of the role.",
+                    "example": "Administrator role with full access"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successfully created the role",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "role_id": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "role_name": {
+                      "type": "string",
+                      "example": "Admin"
+                    },
+                    "description": {
+                      "type": "string",
+                      "example": "Administrator role with full access"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to create role",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Role creation failed"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "Retrieve all roles",
+        "description": "Fetches a list of all roles in the system.",
+        "tags": [
+          "Roles"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved the roles",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "role_id": {
+                        "type": "integer",
+                        "example": 1
+                      },
+                      "role_name": {
+                        "type": "string",
+                        "example": "Admin"
+                      },
+                      "description": {
+                        "type": "string",
+                        "example": "Administrator role with full access"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to fetch roles",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Failed to fetch roles"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/role_privileges": {
+      "post": {
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "Set or update role privileges for an endpoint",
+        "description": "Assigns or updates the privileges (create, read, update, delete) for a specific role on a given endpoint.",
+        "tags": [
+          "Role Privileges"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "role_id",
+                  "endpoint_id",
+                  "can_create",
+                  "can_read",
+                  "can_update",
+                  "can_delete"
+                ],
+                "properties": {
+                  "role_id": {
+                    "type": "integer",
+                    "description": "The ID of the role to which privileges are being assigned.",
+                    "example": 1
+                  },
+                  "endpoint_id": {
+                    "type": "integer",
+                    "description": "The ID of the endpoint for which privileges are being set.",
+                    "example": 10
+                  },
+                  "can_create": {
+                    "type": "boolean",
+                    "description": "Whether the role has permission to create on this endpoint.",
+                    "example": true
+                  },
+                  "can_read": {
+                    "type": "boolean",
+                    "description": "Whether the role has permission to read from this endpoint.",
+                    "example": true
+                  },
+                  "can_update": {
+                    "type": "boolean",
+                    "description": "Whether the role has permission to update this endpoint.",
+                    "example": false
+                  },
+                  "can_delete": {
+                    "type": "boolean",
+                    "description": "Whether the role has permission to delete this endpoint.",
+                    "example": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully updated or set the role privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Role privileges updated successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error in setting role privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Error setting role privileges"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/register": {
+      "post": {
+        "summary": "Register a new user",
+        "description": "Creates a new user account with username, email, and password.",
+        "tags": [
+          "Users"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "username",
+                  "email",
+                  "password"
+                ],
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "example": "johndoe"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "johndoe@example.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "example": "StrongP@ssw0rd"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User successfully registered",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user_id": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "username": {
+                      "type": "string",
+                      "example": "johndoe"
+                    },
+                    "email": {
+                      "type": "string",
+                      "format": "email",
+                      "example": "johndoe@example.com"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "User registration failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "User registration failed due to server error."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "summary": "User login",
+        "description": "Authenticates a user with username and password and returns a JWT token.",
+        "tags": [
+          "Users"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "username",
+                  "password"
+                ],
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "example": "johndoe"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "example": "StrongP@ssw0rd"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful, JWT token returned",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string",
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": "Invalid credentials"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error during login",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "An error occurred during login."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "tags": []
+}

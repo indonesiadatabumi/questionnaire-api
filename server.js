@@ -1,4 +1,5 @@
 // server.js
+const fs = require('fs');
 const express = require('express');
 const knex = require('knex')(require('./knexfile'));
 const dotenv = require('dotenv');
@@ -41,6 +42,9 @@ const swaggerOptions = {
 };
 
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
+
+fs.writeFileSync('swagger.json', JSON.stringify(swaggerDocs, null, 2));
+
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.use('/', routes);  // All routes will be prefixed with '/api'
 
