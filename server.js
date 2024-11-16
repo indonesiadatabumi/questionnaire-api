@@ -46,6 +46,10 @@ const swaggerDocs = swaggerJsdoc(swaggerOptions);
 fs.writeFileSync('swagger.json', JSON.stringify(swaggerDocs, null, 2));
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+app.get('/swagger.json', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify(swaggerDocs, null, 2));
+});
 app.use('/', routes);  // All routes will be prefixed with '/api'
 
 
