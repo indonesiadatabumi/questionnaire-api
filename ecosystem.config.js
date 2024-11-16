@@ -10,11 +10,11 @@ module.exports = {
       ignore_watch: ["node_modules", "logs"],      // Folders to ignore from watching
       env: {
         NODE_ENV: "development",
-        PORT: 3000,
+        PORT: 20608,
       },
       env_production: {
         NODE_ENV: "production",
-        PORT: 8080,
+        PORT: 20608,
       },
       log_date_format: "YYYY-MM-DD HH:mm Z",       // Format for log timestamps
       error_file: "./logs/error.log",              // Error log file location
