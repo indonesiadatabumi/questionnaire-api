@@ -4,8 +4,10 @@ const knex = require('../knex');
 
 /**
  * @swagger
- * /createQuestion:
+ * /questions:
  *   post:
+ *     security:
+ *       - Authorization: [] 
  *     summary: Create a new question within a questionnaire
  *     description: Adds a new question to a specified questionnaire. If the question is multiple-choice, includes options.
  *     tags:
@@ -108,8 +110,10 @@ exports.createQuestion = async (req, res) => {
 
 /**
  * @swagger
- * /getQuestionsByQuestionnaire/{questionnaire_id}:
+ * /questions/{questionnaire_id}:
  *   get:
+ *     security:
+ *       - Authorization: [] 
  *     summary: Retrieve all questions for a questionnaire
  *     description: Fetches all questions for a given questionnaire, including options for multiple-choice questions.
  *     tags:

@@ -1,0 +1,19 @@
+exports.seed = async function(knex) {
+  // Deletes ALL existing entries
+  await knex('endpoints').del();
+
+  // Inserts seed entries
+  await knex('endpoints').insert([
+    { url: '/register', method: 'POST', description: 'User registration endpoint' },
+    { url: '/login', method: 'POST', description: 'User login endpoint' },
+    { url: '/roles', method: 'POST', description: 'Create a new role' },
+    { url: '/roles', method: 'GET', description: 'Fetch all roles' },
+    { url: '/endpoints', method: 'POST', description: 'Create a new endpoint' },
+    { url: '/endpoints', method: 'GET', description: 'Fetch all endpoints' },
+    { url: '/role_privileges', method: 'POST', description: 'Assign or update role privileges for endpoints' },
+    { url: '/questions', method: 'POST', description: 'Create a new question' },
+    { url: '/questions/:questionnaire_id', method: 'GET', description: 'Fetch questions by questionnaire' },
+    { url: '/answers', method: 'POST', description: 'Submit answers' },
+    { url: '/dss/submit', method: 'POST', description: 'Submit answers for analysis' }
+  ]);
+};

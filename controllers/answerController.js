@@ -5,8 +5,10 @@ const knex = require('../knex');
  * @swagger
  * /submitAnswer:
  *   post:
+ *     security:
+ *       - Authorization: [] 
  *     summary: Submit an answer to a question
- *     description: Allows users to submit answers to questions. Supports both text answers and multiple-choice answers.
+ *     description: Allows users to submit answers to questions. Supports both text answers and multiple-choice answers.     
  *     tags:
  *       - Answers
  *     requestBody:
@@ -83,6 +85,6 @@ exports.submitAnswer = async (req, res) => {
 
     res.status(201).json({ message: 'Answer submitted successfully' });
   } catch (err) {
-    res.status(500).json({ error: 'Failed to submit answer' });
+    res.status(500).json({ error: `Failed to submit answer ${err}` });
   }
 };

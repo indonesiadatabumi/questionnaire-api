@@ -26,6 +26,16 @@ const swaggerOptions = {
             version: '1.0.0',
             description: 'API for managing questionnaires and responses',
         },
+        components: {
+            securitySchemes: {
+                Authorization: {
+                    type: "http",
+                    scheme: "bearer",
+                    bearerFormat: "JWT",
+                    value: "Bearer <JWT token here>"
+                }
+            }
+        }        
     },
     apis: ['./controllers/*.js'], // paths to the API docs
 };

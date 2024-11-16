@@ -1,0 +1,13 @@
+exports.seed = async function(knex) {
+  // Deletes ALL existing entries
+  await knex('role_privileges').del();
+
+  // Inserts seed entries
+  await knex('role_privileges').insert([
+    { role_id: 1, endpoint_id: 1, can_create: true, can_read: true, can_update: true, can_delete: true },
+    { role_id: 1, endpoint_id: 2, can_create: true, can_read: true, can_update: true, can_delete: true },
+    { role_id: 2, endpoint_id: 1, can_create: false, can_read: true, can_update: false, can_delete: false },
+    { role_id: 2, endpoint_id: 2, can_create: false, can_read: true, can_update: false, can_delete: false },
+    { role_id: 2, endpoint_id: 3, can_create: false, can_read: false, can_update: false, can_delete: false }
+  ]);
+};

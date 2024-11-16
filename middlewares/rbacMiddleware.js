@@ -1,5 +1,5 @@
 // middlewares/rbacMiddleware.js
-const knex = require('../knexfile');
+const knex = require('../knex');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 dotenv.config();
@@ -8,41 +8,88 @@ dotenv.config();
  * Role-based access control middleware
  * Checks if the user has permission for the requested endpoint
  */
-async function checkRolePermission(req, res, next) {
-  const token = req.header('Authorization');
-  if (!token) return res.status(403).send('Access denied.');
+const checkRolePermission = async (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'Authorization header missing or incorrect' });
+    }
 
-  // Verify JWT
-  jwt.verify(token, process.env.JWT_SECRET, async (err, user) => {
-    if (err) return res.sendStatus(403);
-    req.user = user;
+    // Extract the token from the Bearer scheme
+    const token = authHeader.split(' ')[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Get the requested endpoint
-    const endpointUrl = req.originalUrl;
-    const method = req.method.toUpperCase();
+    // Set user information from token into the request object
+    req.user = decoded;
 
-    // Check if the user has access to this endpoint based on their role
-    const hasPermission = await knex('role_privileges')
-      .join('roles', 'roles.role_id', '=', 'role_privileges.role_id')
-      .join('endpoints', 'endpoints.endpoint_id', '=', 'role_privileges.endpoint_id')
-      .where('roles.role_id', user.role_id)
-      .andWhere('endpoints.url', endpointUrl)
-      .andWhere('endpoints.method', method)
-      .andWhere(function() {
-        switch (method) {
-          case 'GET': return this.where('role_privileges.can_read', true);
-          case 'POST': return this.where('role_privileges.can_create', true);
-          case 'PUT': return this.where('role_privileges.can_update', true);
-          case 'DELETE': return this.where('role_privileges.can_delete', true);
-          default: return this;
+    const { userId, role_id } = decoded;
+    const { method, originalUrl } = req;
+    try {
+      const userRole = role_id; // Assume `req.user` is populated with the user's role ID from the authentication process
+      const requestMethod = method; // e.g., GET, POST
+      const requestUrl = req.baseUrl + req.path; // Combine base URL with the path
+  
+      // Fetch all endpoints from the database
+      const endpoints = await knex('endpoints').select('endpoint_id', 'url', 'method');
+  
+      // Match request URL with dynamic endpoint patterns
+      let matchedEndpoint = null;
+      for (const endpoint of endpoints) {
+        const endpointPattern = endpoint.url.replace(/:\w+/g, '\\w+'); // Convert :params to regex
+        const regex = new RegExp(`^${endpointPattern}$`);
+        if (regex.test(requestUrl) && endpoint.method === requestMethod) {
+          matchedEndpoint = endpoint;
+          break;
         }
-      })
-      .first();
-
-    if (!hasPermission) return res.status(403).send('Permission denied.');
-
-    next();
-  });
-}
+      }
+  
+      if (!matchedEndpoint) {
+        return res.status(403).json({ error: 'Access denied: Endpoint not found or not allowed' });
+      }
+  
+      // Fetch role privileges for the matched endpoint
+      const privilege = await knex('role_privileges')
+        .where({ role_id: userRole, endpoint_id: matchedEndpoint.endpoint_id })
+        .first();
+  
+      if (!privilege) {
+        return res.status(403).json({ error: 'Access denied: No permissions for this endpoint' });
+      }
+  
+      // Check permission based on request method
+      switch (requestMethod) {
+        case 'POST':
+          if (!privilege.can_create) {
+            return res.status(403).json({ error: 'Access denied: Insufficient create permissions' });
+          }
+          break;
+        case 'GET':
+          if (!privilege.can_read) {
+            return res.status(403).json({ error: 'Access denied: Insufficient read permissions' });
+          }
+          break;
+        case 'PUT':
+        case 'PATCH':
+          if (!privilege.can_update) {
+            return res.status(403).json({ error: 'Access denied: Insufficient update permissions' });
+          }
+          break;
+        case 'DELETE':
+          if (!privilege.can_delete) {
+            return res.status(403).json({ error: 'Access denied: Insufficient delete permissions' });
+          }
+          break;
+        default:
+          return res.status(405).json({ error: 'Method not allowed' });
+      }
+  
+      // Proceed to the next middleware or route handler
+      next();
+    } catch (err) {
+      console.error('RBAC Middleware Error:', err);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  } catch (err) {}
+};
 
 module.exports = checkRolePermission;

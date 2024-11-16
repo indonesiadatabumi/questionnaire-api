@@ -2,7 +2,7 @@
 exports.up = function(knex) {
     return knex.schema.createTable('question_options', function(table) {
       table.increments('option_id').primary();
-      table.integer('question_id').unsigned().references('question_id').inTable('questions').onDelete('CASCADE');
+      table.integer('question_id').unsigned().references('question_id').inTable('questions');
       table.string('option_text').notNullable();  // Text for the option
       table.boolean('is_correct').defaultTo(false);  // Flag to indicate if this option is correct
       table.timestamps(true, true);

@@ -1,8 +1,10 @@
 const knex = require('../knex');
 /**
  * @swagger
- * /createQuestionnaire:
+ * /questionnaire:
  *   post:
+ *     security:
+ *       - Authorization: [] 
  *     summary: Create a new questionnaire
  *     description: Adds a new questionnaire with a title, description, and the user who created it.
  *     tags:
@@ -68,8 +70,10 @@ exports.createQuestionnaire = async (req, res) => {
 
 /**
  * @swagger
- * /getQuestionnaires:
+ * /questionnaire:
  *   get:
+ *     security:
+ *       - Authorization: [] 
  *     summary: Retrieve all questionnaires
  *     description: Fetches a list of all questionnaires in the system.
  *     tags:

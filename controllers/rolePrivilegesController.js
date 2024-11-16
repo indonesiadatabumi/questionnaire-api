@@ -2,8 +2,10 @@
 const knex = require('../knex');
 /**
  * @swagger
- * /setRolePrivileges:
+ * /role_privileges:
  *   post:
+ *     security:
+ *       - Authorization: [] 
  *     summary: Set or update role privileges for an endpoint
  *     description: Assigns or updates the privileges (create, read, update, delete) for a specific role on a given endpoint.
  *     tags:

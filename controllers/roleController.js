@@ -2,8 +2,10 @@
 const knex = require('../knex');
 /**
  * @swagger
- * /createRole:
+ * /roles:
  *   post:
+ *     security:
+ *       - Authorization: [] 
  *     summary: Create a new role
  *     description: Creates a new role with a name and description for use in role-based access control.
  *     tags:
@@ -66,8 +68,10 @@ exports.createRole = async (req, res) => {
 
 /**
  * @swagger
- * /getRoles:
+ * /roles:
  *   get:
+ *     security:
+ *       - Authorization: [] 
  *     summary: Retrieve all roles
  *     description: Fetches a list of all roles in the system.
  *     tags:

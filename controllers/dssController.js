@@ -4,8 +4,10 @@ const knex = require('../knex');
 
 /**
  * @swagger
- * /submitAnalysis:
+ * /dss/submit:
  *   post:
+ *     security:
+ *       - Authorization: [] 
  *     summary: Perform analysis on submitted answers
  *     description: Analyzes the answers of a specific questionnaire, calculating the most common selected options for multiple-choice questions. Results are stored in the DSS analysis table.
  *     tags:
@@ -72,6 +74,6 @@ exports.submitAnalysis = async (req, res) => {
     
     res.status(201).json(analysisResult);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to perform analysis' });
+    res.status(500).json({ error: `Failed to perform analysis ${err}` });
   }
 };

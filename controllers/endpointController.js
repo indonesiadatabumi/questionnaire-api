@@ -3,8 +3,10 @@ const knex = require('../knex');
 
 /**
  * @swagger
- * /createEndpoint:
+ * /endpoints:
  *   post:
+ *     security:
+ *       - Authorization: [] 
  *     summary: Create a new API endpoint
  *     description: Adds a new API endpoint with specified URL, HTTP method, and description to the system.
  *     tags:
@@ -75,8 +77,10 @@ exports.createEndpoint = async (req, res) => {
 
 /**
  * @swagger
- * /getEndpoints:
+ * /endpoints:
  *   get:
+ *     security:
+ *       - Authorization: [] 
  *     summary: Retrieve all API endpoints
  *     description: Fetches a list of all available API endpoints, including URL, method, and description for each.
  *     tags:
