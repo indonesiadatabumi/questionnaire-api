@@ -45,7 +45,9 @@ router.post('/dss/submit', checkRolePermission, dssController.submitAnalysis); /
 
 // MBTI Routes
 router.get('/mbti/questions', checkRolePermission, mbtiController.getMBTIQuestions);
+router.post('/mbti/questions', checkRolePermission, mbtiController.createMBTIQuestion);
 router.post('/mbti/submit', checkRolePermission, mbtiController.submitMBTIAnswers);
 router.get('/mbti/user-type', checkRolePermission, mbtiController.getUserMBTIType);
+
 
 module.exports = router;

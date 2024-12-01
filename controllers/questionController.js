@@ -90,21 +90,22 @@ exports.createQuestion = async (req, res) => {
       question_text,
       question_type,
     }).returning('*');
-    
+
     // If the question is multiple-choice, insert options
     if (question_type === 'multiple_choice' && options && Array.isArray(options)) {
-      const optionsData = options.map(option => ({
-        question_id: newQuestion.question_id,
-        option_text: option.text,
-        is_correct: option.is_correct || false, // Flag if the option is the correct one
-      }));
-
-      await knex('question_options').insert(optionsData);
+      await options.map(async (option) => {
+        let optionsData = {
+          question_id: newQuestion.question_id,
+          option_text: option.text,
+          is_correct: option.is_correct, // Flag if the option is the correct one
+        }
+        await knex('question_options').insert(optionsData);
+      });
     }
 
-    res.status(201).json(newQuestion);
+    res.status(200).json(newQuestion);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to create question' });
+    res.status(500).json({ error: `Failed to create question ${err}` });
   }
 };
 

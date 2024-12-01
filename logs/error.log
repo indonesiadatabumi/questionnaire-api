@@ -1,0 +1,11 @@
+You have triggered an unhandledRejection, you may have forgotten to catch a Promise rejection:
+error: insert into "question_options" ("is_correct", "option_text", "question_id") values ($1, $2, $3) - duplicate key value violates unique constraint "question_options_pkey"
+    at Parser.parseErrorMessage (/Users/beni/Documents/work/pakTantan/upload/questionnaire-api/node_modules/pg-protocol/dist/parser.js:283:98)
+    at Parser.handlePacket (/Users/beni/Documents/work/pakTantan/upload/questionnaire-api/node_modules/pg-protocol/dist/parser.js:122:29)
+    at Parser.parse (/Users/beni/Documents/work/pakTantan/upload/questionnaire-api/node_modules/pg-protocol/dist/parser.js:35:38)
+    at Socket.<anonymous> (/Users/beni/Documents/work/pakTantan/upload/questionnaire-api/node_modules/pg-protocol/dist/index.js:11:42)
+    at Socket.emit (node:events:507:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:510:3)
+    at Readable.push (node:internal/streams/readable:390:5)
+    at TCP.onStreamRead (node:internal/stream_base_commons:189:23)

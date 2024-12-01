@@ -390,6 +390,97 @@
             "description": "Failed to fetch MBTI questions."
           }
         }
+      },
+      "post": {
+        "summary": "Create a new MBTI question.",
+        "description": "Add a question for the Myers-Briggs Type Indicator (MBTI) assessment.",
+        "tags": [
+          "MBTI"
+        ],
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "question_text",
+                  "dimension",
+                  "direction"
+                ],
+                "properties": {
+                  "question_text": {
+                    "type": "string",
+                    "description": "The text of the MBTI question.",
+                    "example": "You enjoy vibrant social events with lots of people."
+                  },
+                  "dimension": {
+                    "type": "string",
+                    "description": "The MBTI dimension the question is assessing.",
+                    "enum": [
+                      "EI",
+                      "SN",
+                      "TF",
+                      "JP"
+                    ],
+                    "example": "EI"
+                  },
+                  "direction": {
+                    "type": "string",
+                    "description": "Indicates if the question has a positive or negative impact on the score.",
+                    "enum": [
+                      "positive",
+                      "negative"
+                    ],
+                    "example": "positive"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "MBTI question created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "question_id": {
+                      "type": "integer",
+                      "description": "The unique ID of the created question.",
+                      "example": 1
+                    },
+                    "question_text": {
+                      "type": "string",
+                      "example": "You enjoy vibrant social events with lots of people."
+                    },
+                    "dimension": {
+                      "type": "string",
+                      "example": "EI"
+                    },
+                    "direction": {
+                      "type": "string",
+                      "example": "positive"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or missing fields."
+          },
+          "500": {
+            "description": "Server error during question creation."
+          }
+        }
       }
     },
     "/mbti/submit": {

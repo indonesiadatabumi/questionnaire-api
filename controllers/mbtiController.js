@@ -188,3 +188,98 @@ exports.getUserMBTIType = async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch user MBTI type' });
   }
 };
+
+/**
+ * @swagger
+ * /mbti/questions:
+ *   post:
+ *     summary: Create a new MBTI question.
+ *     description: Add a question for the Myers-Briggs Type Indicator (MBTI) assessment.
+ *     tags:
+ *       - MBTI
+ *     security:
+ *       - Authorization: [] 
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - question_text
+ *               - dimension
+ *               - direction
+ *             properties:
+ *               question_text:
+ *                 type: string
+ *                 description: The text of the MBTI question.
+ *                 example: "You enjoy vibrant social events with lots of people."
+ *               dimension:
+ *                 type: string
+ *                 description: The MBTI dimension the question is assessing.
+ *                 enum: [EI, SN, TF, JP]
+ *                 example: "EI"
+ *               direction:
+ *                 type: string
+ *                 description: Indicates if the question has a positive or negative impact on the score.
+ *                 enum: [positive, negative]
+ *                 example: "positive"
+ *     responses:
+ *       201:
+ *         description: MBTI question created successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 question_id:
+ *                   type: integer
+ *                   description: The unique ID of the created question.
+ *                   example: 1
+ *                 question_text:
+ *                   type: string
+ *                   example: "You enjoy vibrant social events with lots of people."
+ *                 dimension:
+ *                   type: string
+ *                   example: "EI"
+ *                 direction:
+ *                   type: string
+ *                   example: "positive"
+ *       400:
+ *         description: Invalid input or missing fields.
+ *       500:
+ *         description: Server error during question creation.
+ */
+exports.createMBTIQuestion = async (req, res) => {
+  const { question_text, dimension, direction } = req.body;
+
+  try {
+    // Validate input
+    if (!question_text || !dimension || !direction) {
+      return res.status(400).json({ error: 'All fields (question_text, dimension, direction) are required.' });
+    }
+
+    // Ensure dimension and direction are valid
+    const validDimensions = ['EI', 'SN', 'TF', 'JP']; // MBTI personality dimensions
+    const validDirections = ['positive', 'negative'];
+    if (!validDimensions.includes(dimension)) {
+      return res.status(400).json({ error: `Invalid dimension. Allowed values: ${validDimensions.join(', ')}` });
+    }
+    if (!validDirections.includes(direction)) {
+      return res.status(400).json({ error: `Invalid direction. Allowed values: ${validDirections.join(', ')}` });
+    }
+
+    // Insert the MBTI question into the database
+    const [newQuestion] = await knex('mbti_questions').insert({
+      question_text,
+      dimension,
+      direction,
+    }).returning('*');
+
+    // Return the created question
+    res.status(201).json(newQuestion);
+  } catch (err) {
+    console.error('Error creating MBTI question:', err);
+    res.status(500).json({ error: `Failed to create MBTI question: ${err.message}` });
+  }
+};
