@@ -9,3 +9,84 @@ error: insert into "question_options" ("is_correct", "option_text", "question_id
     at readableAddChunkPushByteMode (node:internal/streams/readable:510:3)
     at Readable.push (node:internal/streams/readable:390:5)
     at TCP.onStreamRead (node:internal/stream_base_commons:189:23)
+2024-12-02 11:27 +07:00: RBAC Middleware Error: Error: read ETIMEDOUT
+    at TCP.onStreamRead (node:internal/stream_base_commons:216:20) {
+  errno: -60,
+  code: 'ETIMEDOUT',
+  syscall: 'read'
+}
+You have triggered an unhandledRejection, you may have forgotten to catch a Promise rejection:
+ReferenceError: decoded is not defined
+    at exports.login (/Users/beni/Documents/work/pakTantan/upload/questionnaire-api/controllers/userController.js:138:14)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+You have triggered an unhandledRejection, you may have forgotten to catch a Promise rejection:
+Error: read ETIMEDOUT
+    at TCP.onStreamRead (node:internal/stream_base_commons:216:20)
+2024-12-08 10:45 +07:00: RBAC Middleware Error: Error: read ETIMEDOUT
+    at TCP.onStreamRead (node:internal/stream_base_commons:216:20) {
+  errno: -60,
+  code: 'ETIMEDOUT',
+  syscall: 'read'
+}
+2024-12-08 10:45 +07:00: RBAC Middleware Error: Error: read ETIMEDOUT
+    at TCP.onStreamRead (node:internal/stream_base_commons:216:20) {
+  errno: -60,
+  code: 'ETIMEDOUT',
+  syscall: 'read'
+}
+2024-12-08 11:52 +07:00: SyntaxError: Unexpected token ''', ..."r_option":'1'
+}" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at parse (/Users/beni/Documents/work/pakTantan/upload/questionnaire-api/node_modules/body-parser/lib/types/json.js:92:19)
+    at /Users/beni/Documents/work/pakTantan/upload/questionnaire-api/node_modules/body-parser/lib/read.js:128:18
+    at AsyncResource.runInAsyncScope (node:async_hooks:211:14)
+    at invokeCallback (/Users/beni/Documents/work/pakTantan/upload/questionnaire-api/node_modules/raw-body/index.js:238:16)
+    at done (/Users/beni/Documents/work/pakTantan/upload/questionnaire-api/node_modules/raw-body/index.js:227:7)
+    at IncomingMessage.onEnd (/Users/beni/Documents/work/pakTantan/upload/questionnaire-api/node_modules/raw-body/index.js:287:7)
+    at IncomingMessage.emit (node:events:507:28)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+2024-12-08 11:52 +07:00: SyntaxError: Unexpected token ''', ..."r_option":'1'
+}" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at parse (/Users/beni/Documents/work/pakTantan/upload/questionnaire-api/node_modules/body-parser/lib/types/json.js:92:19)
+    at /Users/beni/Documents/work/pakTantan/upload/questionnaire-api/node_modules/body-parser/lib/read.js:128:18
+    at AsyncResource.runInAsyncScope (node:async_hooks:211:14)
+    at invokeCallback (/Users/beni/Documents/work/pakTantan/upload/questionnaire-api/node_modules/raw-body/index.js:238:16)
+    at done (/Users/beni/Documents/work/pakTantan/upload/questionnaire-api/node_modules/raw-body/index.js:227:7)
+    at IncomingMessage.onEnd (/Users/beni/Documents/work/pakTantan/upload/questionnaire-api/node_modules/raw-body/index.js:287:7)
+    at IncomingMessage.emit (node:events:507:28)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+2024-12-08 11:53 +07:00: SyntaxError: Unexpected token ''', ..."r_option":'1'
+}" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at parse (/Users/beni/Documents/work/pakTantan/upload/questionnaire-api/node_modules/body-parser/lib/types/json.js:92:19)
+    at /Users/beni/Documents/work/pakTantan/upload/questionnaire-api/node_modules/body-parser/lib/read.js:128:18
+    at AsyncResource.runInAsyncScope (node:async_hooks:211:14)
+    at invokeCallback (/Users/beni/Documents/work/pakTantan/upload/questionnaire-api/node_modules/raw-body/index.js:238:16)
+    at done (/Users/beni/Documents/work/pakTantan/upload/questionnaire-api/node_modules/raw-body/index.js:227:7)
+    at IncomingMessage.onEnd (/Users/beni/Documents/work/pakTantan/upload/questionnaire-api/node_modules/raw-body/index.js:287:7)
+    at IncomingMessage.emit (node:events:507:28)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+2024-12-08 11:55 +07:00: SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2)
+    at JSON.parse (<anonymous>)
+    at parse (/Users/beni/Documents/work/pakTantan/upload/questionnaire-api/node_modules/body-parser/lib/types/json.js:92:19)
+    at /Users/beni/Documents/work/pakTantan/upload/questionnaire-api/node_modules/body-parser/lib/read.js:128:18
+    at AsyncResource.runInAsyncScope (node:async_hooks:211:14)
+    at invokeCallback (/Users/beni/Documents/work/pakTantan/upload/questionnaire-api/node_modules/raw-body/index.js:238:16)
+    at done (/Users/beni/Documents/work/pakTantan/upload/questionnaire-api/node_modules/raw-body/index.js:227:7)
+    at IncomingMessage.onEnd (/Users/beni/Documents/work/pakTantan/upload/questionnaire-api/node_modules/raw-body/index.js:287:7)
+    at IncomingMessage.emit (node:events:507:28)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+2024-12-08 14:22 +07:00: RBAC Middleware Error: Error: read ETIMEDOUT
+    at TCP.onStreamRead (node:internal/stream_base_commons:216:20) {
+  errno: -60,
+  code: 'ETIMEDOUT',
+  syscall: 'read'
+}
+You have triggered an unhandledRejection, you may have forgotten to catch a Promise rejection:
+Error: read ETIMEDOUT
+    at TCP.onStreamRead (node:internal/stream_base_commons:216:20)

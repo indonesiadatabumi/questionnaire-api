@@ -39,7 +39,7 @@
                   "question_id"
                 ],
                 "properties": {
-                  "response_id": {
+                  "questionnaire_id": {
                     "type": "integer",
                     "description": "The ID of the response session.",
                     "example": 1
@@ -55,17 +55,13 @@
                     "example": "This is a sample text answer."
                   },
                   "answer_option": {
-                    "type": "array",
+                    "type": "string",
                     "description": "Array of selected options for multiple-choice questions.",
                     "items": {
                       "type": "integer",
                       "description": "Option ID for a multiple-choice answer."
                     },
-                    "example": [
-                      1,
-                      2,
-                      4
-                    ]
+                    "example": 1
                   }
                 }
               }
@@ -176,6 +172,78 @@
                     "error": {
                       "type": "string",
                       "example": "Failed to perform analysis"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dss/results": {
+      "get": {
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "Retrieve all questionnaire analysis results",
+        "description": "Fetches the analysis results for all questionnaires in the system.",
+        "tags": [
+          "Analysis"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved analysis results for all questionnaires",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "questionnaire_id": {
+                        "type": "integer",
+                        "example": 1
+                      },
+                      "analysis_results": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "option_text": {
+                              "type": "string",
+                              "example": "Blue"
+                            },
+                            "count": {
+                              "type": "integer",
+                              "example": 10
+                            }
+                          }
+                        }
+                      },
+                      "analyzed_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-11-16T01:41:05.471Z"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to fetch analysis results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Failed to fetch all analysis results"
                     }
                   }
                 }
@@ -594,6 +662,146 @@
           },
           "500": {
             "description": "Failed to fetch user's MBTI type."
+          }
+        }
+      }
+    },
+    "/mbti/admin-results": {
+      "get": {
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "Get MBTI results for all members.",
+        "description": "Retrieve MBTI types and descriptions for all members. Admin-only access.",
+        "tags": [
+          "MBTI"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Page number for pagination (default is 1)."
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Number of records per page (default is 10)."
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Optional search term to filter by username or MBTI type."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of members and their MBTI results retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "user_id": {
+                            "type": "integer",
+                            "description": "User's ID."
+                          },
+                          "username": {
+                            "type": "string",
+                            "description": "User's name."
+                          },
+                          "type_name": {
+                            "type": "string",
+                            "description": "User's MBTI type."
+                          },
+                          "description": {
+                            "type": "string",
+                            "description": "Description of the MBTI type."
+                          }
+                        }
+                      }
+                    },
+                    "pagination": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "integer"
+                        },
+                        "limit": {
+                          "type": "integer"
+                        },
+                        "total": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Admin-only access."
+          },
+          "500": {
+            "description": "Server error during retrieval."
+          }
+        }
+      }
+    },
+    "/mbti/member-result": {
+      "get": {
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "Get individual MBTI result.",
+        "description": "Retrieve the authenticated user's MBTI type and description.",
+        "tags": [
+          "MBTI"
+        ],
+        "responses": {
+          "200": {
+            "description": "User's MBTI result retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type_name": {
+                      "type": "string",
+                      "description": "MBTI type of the user (e.g., INTJ)."
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "Description of the user's MBTI type."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "MBTI result not found for user."
+          },
+          "500": {
+            "description": "Server error during retrieval."
           }
         }
       }
@@ -1313,6 +1521,65 @@
                     "token": {
                       "type": "string",
                       "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": "Invalid credentials"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error during login",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "An error occurred during login."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/get-role": {
+      "get": {
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "Get User Role",
+        "description": "Get User Role.",
+        "tags": [
+          "Users"
+        ],
+        "responses": {
+          "200": {
+            "description": "Login successful, JWT token returned",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string",
+                      "example": "Admin, Member..."
                     }
                   }
                 }

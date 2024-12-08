@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
+const cors = require('cors');
 
 const routes = require('./routes/routes');  // Import routes.js
 
@@ -16,6 +17,7 @@ const app = express();
 const port = process.env.PORT || 20608;
 
 // Middleware
+app.use(cors());
 app.use(express.json());
 
 // Swagger Documentation Setup

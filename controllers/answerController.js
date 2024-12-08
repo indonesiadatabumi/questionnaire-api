@@ -21,7 +21,7 @@ const knex = require('../knex');
  *               - response_id
  *               - question_id
  *             properties:
- *               response_id:
+ *               questionnaire_id:
  *                 type: integer
  *                 description: The ID of the response session.
  *                 example: 1
@@ -34,12 +34,12 @@ const knex = require('../knex');
  *                 description: Answer text for open-ended questions (used if question is not multiple-choice).
  *                 example: "This is a sample text answer."
  *               answer_option:
- *                 type: array
+ *                 type: string
  *                 description: Array of selected options for multiple-choice questions.
  *                 items:
  *                   type: integer
  *                   description: Option ID for a multiple-choice answer.
- *                 example: [1, 2, 4]
+ *                 example: 1
  *     responses:
  *       201:
  *         description: Answer submitted successfully
@@ -63,21 +63,35 @@ const knex = require('../knex');
  *                   example: "Failed to submit answer"
  */
 exports.submitAnswer = async (req, res) => {
-  const { response_id, question_id, answer_text, answer_option } = req.body;
+  const { questionnaire_id, question_id, answer_text, answer_option } = req.body;
 
   try {
-    if (Array.isArray(answer_option)) {
+    const queryResponse = {
+      questionnaire_id: questionnaire_id,
+      user_id: req.user.userId
+    };
+
+    let dataResponse = await knex('questionnaire_responses').where(queryResponse);
+    if (dataResponse.length < 1) {
+      dataResponse = await knex('questionnaire_responses').insert({
+        questionnaire_id: questionnaire_id,
+        user_id: req.user.userId
+      }).returning("response_id")
+    }
+
+
+    if (answer_option) {
       // Multiple-choice question: answer_option will be an array of selected options
-      const answers = answer_option.map(option_id => ({
-        response_id,
+      // const answers = answer_option.map(option_id => ());
+      await knex('answers').insert({
+        response_id: dataResponse[0].response_id,
         question_id,
-        answer_option: option_id,
-      }));
-      await knex('answers').insert(answers);
+        answer_option: answer_option,
+      });
     } else {
       // Text question: answer_text will be a string
       await knex('answers').insert({
-        response_id,
+        response_id: dataResponse[0].response_id,
         question_id,
         answer_text,
       });

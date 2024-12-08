@@ -17,6 +17,7 @@ const checkRolePermission = require('../middlewares/rbacMiddleware');
 // User routes
 router.post('/register', userController.register);
 router.post('/login', userController.login);
+router.get('/get-role', userController.decodeRole);
 
 // Role routes
 router.post('/roles', checkRolePermission, roleController.createRole);
@@ -42,12 +43,15 @@ router.post('/submitAnswer', checkRolePermission, answerController.submitAnswer)
 
 // DSS routes
 router.post('/dss/submit', checkRolePermission, dssController.submitAnalysis); // Perform analysis on submitted answers
+router.get('/dss/results', checkRolePermission, dssController.getAllAnalysisResults); // Perform analysis on submitted answers
 
 // MBTI Routes
 router.get('/mbti/questions', checkRolePermission, mbtiController.getMBTIQuestions);
 router.post('/mbti/questions', checkRolePermission, mbtiController.createMBTIQuestion);
 router.post('/mbti/submit', checkRolePermission, mbtiController.submitMBTIAnswers);
 router.get('/mbti/user-type', checkRolePermission, mbtiController.getUserMBTIType);
+router.get('/mbti/admin-results', checkRolePermission, mbtiController.getAllMBTIResults);
+router.get('/mbti/member-result', checkRolePermission, mbtiController.getMemberMBTIResult);
 
 
 module.exports = router;

@@ -283,3 +283,161 @@ exports.createMBTIQuestion = async (req, res) => {
     res.status(500).json({ error: `Failed to create MBTI question: ${err.message}` });
   }
 };
+
+
+
+/**
+ * @swagger
+ * /mbti/admin-results:
+ *   get:
+ *     security:
+ *       - Authorization: [] 
+ *     summary: Get MBTI results for all members.
+ *     description: Retrieve MBTI types and descriptions for all members. Admin-only access.
+ *     tags:
+ *       - MBTI
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *         description: Page number for pagination (default is 1).
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *         description: Number of records per page (default is 10).
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Optional search term to filter by username or MBTI type.
+ *     responses:
+ *       200:
+ *         description: List of members and their MBTI results retrieved successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       user_id:
+ *                         type: integer
+ *                         description: User's ID.
+ *                       username:
+ *                         type: string
+ *                         description: User's name.
+ *                       type_name:
+ *                         type: string
+ *                         description: User's MBTI type.
+ *                       description:
+ *                         type: string
+ *                         description: Description of the MBTI type.
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     page:
+ *                       type: integer
+ *                     limit:
+ *                       type: integer
+ *                     total:
+ *                       type: integer
+ *       403:
+ *         description: Forbidden - Admin-only access.
+ *       500:
+ *         description: Server error during retrieval.
+ */
+exports.getAllMBTIResults = async (req, res) => {
+  const { page = 1, limit = 10, search = '' } = req.query;
+
+  try {
+    const offset = (page - 1) * limit;
+
+    // Query members with MBTI results
+    const results = await knex('user_mbti')
+      .join('users', 'user_mbti.user_id', '=', 'users.user_id')
+      .join('mbti_types', 'user_mbti.type_id', '=', 'mbti_types.type_id')
+      .select('users.user_id', 'users.username', 'mbti_types.type_name', 'mbti_types.description')
+      .where(function () {
+        if (search) {
+          this.where('users.username', 'like', `%${search}%`)
+            .orWhere('mbti_types.type_name', 'like', `%${search}%`);
+        }
+      })
+      .limit(limit)
+      .offset(offset);
+
+    // Get total count for pagination
+    const total = await knex('user_mbti')
+      .join('users', 'user_mbti.user_id', '=', 'users.user_id')
+      .count('user_mbti.user_id as count')
+      .first();
+
+    res.json({
+      data: results,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total: total.count,
+      },
+    });
+  } catch (err) {
+    console.error('Error fetching MBTI results for all members:', err);
+    res.status(500).json({ error: 'Failed to fetch MBTI results for all members' });
+  }
+};
+
+
+/**
+ * @swagger
+ * /mbti/member-result:
+ *   get:
+ *     security:
+ *       - Authorization: [] 
+ *     summary: Get individual MBTI result.
+ *     description: Retrieve the authenticated user's MBTI type and description.
+ *     tags:
+ *       - MBTI
+ *     responses:
+ *       200:
+ *         description: User's MBTI result retrieved successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 type_name:
+ *                   type: string
+ *                   description: MBTI type of the user (e.g., INTJ).
+ *                 description:
+ *                   type: string
+ *                   description: Description of the user's MBTI type.
+ *       404:
+ *         description: MBTI result not found for user.
+ *       500:
+ *         description: Server error during retrieval.
+ */
+exports.getMemberMBTIResult = async (req, res) => {
+  const userId = req.user.userId;
+
+  try {
+    const userMBTI = await knex('user_mbti')
+      .join('mbti_types', 'user_mbti.type_id', '=', 'mbti_types.type_id')
+      .where('user_mbti.user_id', userId)
+      .select('mbti_types.type_name', 'mbti_types.description')
+      .first();
+
+    if (!userMBTI) {
+      return res.status(404).json({ error: 'MBTI result not found for user' });
+    }
+
+    res.json(userMBTI);
+  } catch (err) {
+    console.error('Error fetching individual MBTI result:', err);
+    res.status(500).json({ error: 'Failed to fetch MBTI result for user' });
+  }
+};

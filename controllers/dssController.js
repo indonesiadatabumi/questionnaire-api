@@ -77,3 +77,74 @@ exports.submitAnalysis = async (req, res) => {
     res.status(500).json({ error: `Failed to perform analysis ${err}` });
   }
 };
+
+
+/**
+ * @swagger
+ * /dss/results:
+ *   get:
+ *     security:
+ *       - Authorization: [] 
+ *     summary: Retrieve all questionnaire analysis results
+ *     description: Fetches the analysis results for all questionnaires in the system.
+ *     tags:
+ *       - Analysis
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved analysis results for all questionnaires
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   questionnaire_id:
+ *                     type: integer
+ *                     example: 1
+ *                   analysis_results:
+ *                     type: array
+ *                     items:
+ *                       type: object
+ *                       properties:
+ *                         option_text:
+ *                           type: string
+ *                           example: "Blue"
+ *                         count:
+ *                           type: integer
+ *                           example: 10
+ *                   analyzed_at:
+ *                     type: string
+ *                     format: date-time
+ *                     example: "2024-11-16T01:41:05.471Z"
+ *       500:
+ *         description: Failed to fetch analysis results
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Failed to fetch all analysis results"
+ */
+
+exports.getAllAnalysisResults = async (req, res) => {
+  try {
+    const analyses = await knex('dss_analysis').select('questionnaire_id', 'analysis_result', 'analyzed_at');
+
+    analyses.map((analysis) => {
+      console.log(analysis);
+    })
+    
+    const results = analyses.map((analysis) => ({      
+      questionnaire_id: analysis.questionnaire_id,
+      analysis_results: analysis.analysis_result,
+      analyzed_at: analysis.analyzed_at,
+    }));
+
+    res.status(200).json(results);
+  } catch (err) {
+    res.status(500).json({ error: `Failed to fetch all analysis results ${err}` });
+  }
+};

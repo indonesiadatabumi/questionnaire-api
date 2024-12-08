@@ -15,13 +15,7 @@ module.exports = {
       env_production: {
         NODE_ENV: "production",
         PORT: 20608,
-      },
-      log_date_format: "YYYY-MM-DD HH:mm Z",       // Format for log timestamps
-      error_file: "./logs/error.log",              // Error log file location
-      out_file: "./logs/output.log",               // Output log file location
-      merge_logs: true,                            // Combine logs for all instances
-      max_restarts: 5,                             // Max restarts before stopping
-      restart_delay: 5000,                         // Delay between restarts (in ms)
+      }
     },
   ],
 };
